@@ -38,7 +38,7 @@ platforms:
 - name: digitalocean
   driver:
     name: digitalocean
-    server_name: <%= ENV['BUILD_NAME'] || "ansible-k3s-" + Time.now.strftime("%Y%m%d-%H%M%S") %>
+    server_name: <%= ENV['BUILD_NAME'] || "ansible-k3s-" + Time.now.strftime("%Y%m%d-%H%M%S") + ".kitchen" %>
     image: fedora-30-x64
     region: <%= ENV['DIGITALOCEAN_REGION'] || 'lon1' %>
     size: s-1vcpu-2gb

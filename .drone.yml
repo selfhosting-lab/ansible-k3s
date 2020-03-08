@@ -32,6 +32,7 @@ steps:
   commands:
   - eval $(ssh-agent)
   - ssh-add .ssh/id_rsa
+  - export BUILD_NAME="${DRONE_REPO_NAME}-${DRONE_TAG:-${DRONE_BRANCH}}-${DRONE_BUILD_NUMBER}.drone"
   - bundle exec kitchen create digitalocean
   - bundle exec kitchen converge digitalocean
 
