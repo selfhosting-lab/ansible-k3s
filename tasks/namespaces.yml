@@ -1,0 +1,33 @@
+---
+
+# NO TESTS
+- name: 'namespaces : Create K8s namespaces'
+  k8s:
+    name: "{{ item }}"
+    api_version: v1
+    kind: Namespace
+    state: present
+  with_items: "{{ namespaces }}"
+
+# NO TESTS
+- name: 'namespaces : Create service accounts for each namespaces'
+  k8s:
+    name: "{{ item }}-deploy"
+    namespace: "{{ item }}"
+    state: present
+    kind: ServiceAccount
+  with_items: "{{ namespaces }}"
+
+# NO TESTS
+- name: 'namespaces : Create service account tokens'
+  k8s:
+    name: "{{ item }}-deploy-secret"
+    namespace: "{{ item }}"
+    state: present
+    kind: Secret
+    resource_definition:
+      type: "kubernetes.io/service-account-token"
+      metadata:
+        annotations:
+          kubernetes.io/service-account.name: "{{ item }}-deploy"
+  with_items: "{{ namespaces }}"

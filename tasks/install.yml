@@ -1,0 +1,86 @@
+---
+
+- name: 'install : Install Openshift Python module'
+  # This is so Ansible can manage Kubernetes objects
+  pip:
+    name: openshift
+    state: present
+
+- name: 'install : Download k3s binary'
+  get_url:
+    url: https://github.com/rancher/k3s/releases/download/{{ k3s_version }}/k3s
+    dest: "{{ bin_dir }}/k3s"
+    owner: root
+    group: root
+    mode: 0755
+    force: no
+
+- name: 'install : Manage service'
+  register: k3s_service
+  template:
+    src: k3s-master.service.j2
+    dest: "{{ systemd_dir }}/k3s.service"
+    owner: root
+    group: root
+    mode: 0644
+    seuser: system_u
+    serole: object_r
+    setype: systemd_unit_file_t
+  notify:
+    - restart k3s
+
+- name: 'install : Manage sysconfig'
+  template:
+    src: k3s-sysconfig.j2
+    dest: "{{ sysconfig_file }}"
+    owner: root
+    group: root
+    mode: 0644
+    seuser: system_u
+    serole: object_r
+    setype: etc_t
+  notify:
+    - restart k3s
+
+- name: 'install : Ensure k3s is running'
+  systemd:
+    name: k3s
+    daemon_reload: true
+    state: started
+    enabled: true
+
+- name: 'install : Wait for node token to be generated'
+  wait_for:
+    path: "{{ node_token_path }}"
+
+# NO TESTS
+- name: 'install : Load node token'
+  slurp:
+    src: "{{ node_token_path }}"
+  register: node_token
+
+# NO TESTS
+- name: 'install : Save node token'
+  set_fact:
+    token: "{{ node_token.content | b64decode | regex_replace('\n', '') }}"
+
+# NEEDS TESTS
+- name: 'install : Store k3s certificates'
+  copy:
+    owner: root
+    group: root
+    mode: 0644
+    remote_src: true
+    src: "{{ k3s_var_dir }}/tls/server-ca.crt"
+    dest: "{{ kubernetes_config_dir }}/ca-certificate.pem"
+
+# NEEDS TESTS
+- name: 'install : Ensure k3s certificates are included in system truststore'
+  file:
+    owner: root
+    group: root
+    src: "{{ kubernetes_config_dir }}/ca-certificate.pem"
+    dest: "/etc/pki/ca-trust/source/anchors/k3s.crt"
+    state: link
+  notify:
+  - regenerate truststore

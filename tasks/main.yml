@@ -1,0 +1,20 @@
+---
+
+- name: audit
+  include: audit.yml
+
+- name: firewalld
+  include: firewalld.yml
+
+- name: install
+  include: install.yml
+
+- name: users
+  include: users.yml
+
+- name: namespaces
+  include: namespaces.yml
+  when: "{{ namespaces | length > 0 }}"
+
+- name: additional tools
+  include: additional.yml

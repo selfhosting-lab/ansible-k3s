@@ -1,0 +1,14 @@
+---
+
+- hosts: all
+  become: true
+  gather_facts: true
+  pre_tasks:
+  - name: 'playbook : Update system packages'
+    dnf:
+      name: '*'
+      state: latest
+  roles:
+  - host
+  - hardening
+  - ansible-k3s

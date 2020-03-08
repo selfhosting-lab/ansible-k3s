@@ -1,0 +1,19 @@
+---
+
+- name: 'k3s : Symlink embedded utilities'
+  file:
+    path: "{{ bin_dir }}/{{ item }}"
+    src: "{{ bin_dir }}/k3s"
+    state: link
+  with_items:
+  - kubectl
+  - crictl
+  - ctr
+
+- name: 'k3s : Add utilities autocompletion'
+  shell: "{{ bin_dir }}/k3s {{ item }} completion bash > {{ bash_completion_dir }}/{{ item }}"
+  args:
+    creates: "{{ bash_completion_dir }}/{{ item }}"
+  with_items:
+  - kubectl
+  - crictl

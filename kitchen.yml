@@ -1,0 +1,61 @@
+---
+
+provisioner:
+  name: ansible_push
+  roles_path: test/roles/
+  chef_bootstrap_url: nil
+  host_key_checking: false
+  display_skipped_hosts: false
+  ansible_config: test/ansible.cfg
+  verbose: <%= ENV['VERBOSITY'] %>
+  idempotency_test: <%= ENV['IDEMPOTENCY_TEST'] || 'false' %>
+  fail_non_idempotent: false
+
+
+verifier:
+  name: inspec
+  profiles_path: test/integration
+  reporter:
+  - cli
+  - junit:test/results/%{platform}_%{suite}_inspec.xml
+
+
+platforms:
+<% unless `which vagrant`.empty? %>
+  # Local development platform, using Vagrant (default)
+- name: vagrant
+  driver:
+    name: vagrant
+    box: fedora/30-cloud-base
+    customize:
+      memory: 2048
+    network:
+    - ['private_network', {ip: '192.168.33.10'}]
+<% end %>
+
+<% if ENV['DIGITALOCEAN_ACCESS_TOKEN'] %>
+  # Cloud integration platform, using Digital Ocean, if available
+- name: digitalocean
+  driver:
+    name: digitalocean
+    server_name: <%= ENV['BUILD_NAME'] || "ansible-k3s-" + Time.now.strftime("%Y%m%d-%H%M%S") %>
+    image: fedora-30-x64
+    region: <%= ENV['DIGITALOCEAN_REGION'] || 'lon1' %>
+    size: s-1vcpu-2gb
+    tags:
+    - ci
+    - test
+<% end %>
+
+
+suites:
+- name: default
+  provisioner:
+    playbook: test/integration/default/playbook.yml
+
+
+transport:
+  ssh:
+    max_ssh_sessions: 5
+    connection_timeout: 10
+    connection_retries: 5

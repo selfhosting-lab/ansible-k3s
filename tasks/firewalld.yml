@@ -1,0 +1,36 @@
+---
+
+- name: 'firewalld : Ensure Kube-API firewalld service exists'
+  copy:
+    src: kube-api.xml
+    dest: "{{ firewalld_services_dir }}/kube-api.xml"
+    mode: 0644
+    owner: root
+    group: root
+    seuser: system_u
+    serole: object_r
+    setype: firewalld_etc_rw_t
+  register: k3s_firewalld
+
+- name: 'firewalld : Ensure Kube-API is in the firewalld service list'
+  systemd:
+    name: firewalld
+    state: reloaded
+  when: k3s_firewalld.changed
+
+- name: 'firewalld : Ensure Kube-API is available in the internal zone'
+  firewalld:
+    zone: internal
+    service: kube-api
+    state: enabled
+    immediate: true
+    permanent: true
+
+# NO TESTS
+- name: 'firewalld : Configure whether Kube-API is available in the public zone'
+  firewalld:
+    zone: public
+    service: kube-api
+    state: "{{ 'enabled' if k3s_publc | default(false) | bool == 'true' else 'disabled' }}"
+    immediate: true
+    permanent: true

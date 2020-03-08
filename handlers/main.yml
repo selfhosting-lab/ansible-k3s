@@ -1,0 +1,15 @@
+---
+
+- name: restart k3s
+  systemd:
+    name: k3s
+    state: restarted
+    daemon_reload: true
+
+- name: reload firewalld
+  systemd:
+    name: firewalld
+    state: reloaded
+
+- name: regenerate truststore
+  command: update-ca-trust

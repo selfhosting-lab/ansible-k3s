@@ -1,0 +1,21 @@
+---
+
+name: default
+title: default
+maintainer: Ben Fairless
+copyright: Ben Fairless
+copyright_email: ben.fairless@gmail.com
+license: MIT
+summary: Validates default dependencies
+version: 1.0
+
+supports:
+- platform-family: fedora
+
+depends:
+- name: k3s
+  path: spec
+- name: host
+  path: test/roles/host/spec
+- name: hardening
+  path: test/roles/hardening/spec

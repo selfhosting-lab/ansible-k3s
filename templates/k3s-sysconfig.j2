@@ -1,0 +1,12 @@
+{{ ansible_managed | comment }}
+
+# K3s options
+
+# Cluster-wide settings
+CLUSTER_ARGS="{{ cluster_arguments | join(' ') }}"
+
+# Additional cluster-wide settings
+ADDITIONAL_ARGS="{{ k3s_args | join(' ') }}"
+
+# Node-specific settings
+NODE_ARGS="{{ k3s_node_args | join(' ') }}"

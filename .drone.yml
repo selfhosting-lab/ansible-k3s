@@ -1,0 +1,56 @@
+---
+kind: pipeline
+type: docker
+name: integration
+
+workspace:
+  path: /builds/ansible-k3s
+
+clone:
+  depth: 1
+ 
+steps:
+- name: dependencies
+  image: selfhostinglab/ci-builder:latest
+  environment:
+    SSH_KEY:
+      from_secret: SSH_KEY
+  commands:
+  - mkdir -p .ssh
+  - echo $${SSH_KEY} | tr \'","\' '\n' > .ssh/id_rsa
+  - chmod 600 .ssh/id_rsa
+  - bundle install
+  - test/dependencies.sh
+
+- name: create
+  image: selfhostinglab/ci-builder:latest
+  environment: &common
+    DIGITALOCEAN_ACCESS_TOKEN:
+      from_secret: DIGITALOCEAN_ACCESS_TOKEN
+    DIGITALOCEAN_SSH_KEY_IDS:
+      from_secret: DIGITALOCEAN_SSH_KEY_IDS
+  commands:
+  - eval $(ssh-agent)
+  - ssh-add .ssh/id_rsa
+  - bundle exec kitchen create digitalocean
+  - bundle exec kitchen converge digitalocean
+
+- name: validate
+  image: selfhostinglab/ci-builder:latest
+  environment: *common
+  commands:
+  - eval $(ssh-agent)
+  - ssh-add .ssh/id_rsa
+  - bundle exec kitchen verify digitalocean
+
+- name: destroy
+  image: selfhostinglab/ci-builder:latest
+  environment: *common
+  commands:
+  - eval $(ssh-agent)
+  - ssh-add .ssh/id_rsa
+  - bundle exec kitchen destroy digitalocean
+  when:
+    status:
+    - failure
+    - success

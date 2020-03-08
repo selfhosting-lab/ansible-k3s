@@ -1,0 +1,23 @@
+---
+
+# NO TESTS
+- name: 'audit : Ensure audit configuration directory exists'
+  file:
+    path: "{{ kubernetes_api_server_dir }}"
+    owner: root
+    group: root
+    # mode: 0700
+    # seuser: system_u
+    # serole: object_r
+    # setype: swapfile_t
+    state: directory
+    recurse: true
+
+# NO TESTS
+- name: 'audit : Ensure Kube API audit configuration is installed'
+  copy:
+    src: audit.yml
+    dest: "{{ kubernetes_audit_path }}"
+    owner: root
+    group: root
+    mode: 0644

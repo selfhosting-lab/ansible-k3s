@@ -1,0 +1,37 @@
+---
+
+- name: 'users : Ensure kubeconfig directory exists in root user directory'
+  file:
+    path: /root/.kube
+    owner: root
+    group: root
+    mode: 0750
+    state: directory
+
+- name: 'users : Ensure kubeconfig exists in root user directory'
+  copy:
+    owner: root
+    group: root
+    mode: 0640
+    remote_src: true
+    src: "{{ kubeconfig_path }}"
+    dest: /root/.kube/config
+
+# NO TESTS
+- name: 'users : Ensure kubeconfig directory exists in user directory'
+  file:
+    path: "{{ ansible_env.HOME }}/.kube"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0750
+    state: directory
+
+# NO TESTS
+- name: 'users : Ensure kubeconfig exists in user directory'
+  copy:
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0640
+    remote_src: true
+    src: "{{ kubeconfig_path }}"
+    dest: "{{ ansible_env.HOME }}/.kube/config"

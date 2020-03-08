@@ -1,0 +1,115 @@
+---
+
+# K3S configuration
+k3s_version: v1.17.2+k3s1
+k3s_cluster_network: 10.42.0.0/16
+k3s_service_network: 10.43.0.0/24
+k3s_public: false
+
+# Custom namespaces to create
+namespaces: []
+
+# DNS configuration
+coredns_ip: 10.43.0.10
+kubernetes_domain: cluster.local
+
+# Additional arguments for k3s cluster
+k3s_args: []
+# k3s_args:
+#  - '--kube-apiserver-arg oidc-issuer-url=https://auth.example.com'
+#  - '--kube-apiserver-arg oidc-client-id=k3s'
+#  - '--kube-apiserver-arg oidc-ca-file=/etc/ssl/certs/dex.pem'
+#  - '--kube-apiserver-arg oidc-username-claim=email'
+#  - '--kube-apiserver-arg oidc-groups-claim=groups'
+
+# Additional node arguments
+k3s_node_args: []
+
+# Paths
+bin_dir: /usr/local/bin
+bash_completion_dir: /etc/bash_completion.d
+systemd_dir: /etc/systemd/system
+sysconfig_file: /etc/sysconfig/k3s
+firewalld_services_dir: /etc/firewalld/services
+k3s_etc_dir: /etc/rancher/k3s
+k3s_var_dir: /var/lib/rancher/k3s/server
+manifests_dir: "{{ k3s_var_dir }}/manifests"
+node_token_path: "{{ k3s_var_dir }}/node-token"
+kubeconfig_path: "{{ k3s_etc_dir }}/k3s.yaml"
+kubernetes_config_dir: /etc/kubernetes
+kubernetes_api_server_dir: "{{ kubernetes_config_dir }}/api-server"
+kubernetes_audit_path: "{{ kubernetes_api_server_dir }}/audit-policy.yaml"
+kubernetes_audit_log_path: /var/log/kube-audit.log
+
+# K3s master arguments
+# Cluster arguments are only used on masters
+cluster_arguments:
+# - "--bind-address 0.0.0.0"
+# - "--write-kubeconfig-mode 664"
+- "--service-cidr {{ k3s_service_network }}"
+- "--cluster-cidr {{ k3s_cluster_network }}"
+- "--cluster-dns {{ coredns_ip }}"
+- "--cluster-domain {{ kubernetes_domain }}"
+- "--kube-apiserver-arg audit-policy-file={{ kubernetes_audit_path }}"
+- "--kube-apiserver-arg audit-log-path={{ kubernetes_audit_log_path }}"
+- "--no-deploy coredns,servicelb,traefik,local-storage,metrics-server"
+# coredns,servicelb,traefik,local-storage,metrics-server
+# - "--flannel-backend=none" # If you want to use a different CNI
+
+#  --log value, -l value                      (logging) Log to file
+#  --alsologtostderr                          (logging) Log to standard error as well as file (if set)
+#  --advertise-address value                  (listener) IP address that apiserver uses to advertise to members of the cluster (default: node-external-ip/node-ip)
+#  --flannel-backend value                    (networking) One of 'none', 'vxlan', 'ipsec', or 'flannel' (default: "vxlan")
+#  --kube-scheduler-arg value                 (flags) Customized flag for kube-scheduler process
+#  --kube-controller-manager-arg value        (flags) Customized flag for kube-controller-manager process
+#  --kube-cloud-controller-manager-arg value  (flags) Customized flag for kube-cloud-controller-manager process
+#  --datastore-cafile value                   (db) TLS Certificate Authority file used to secure datastore backend communication [$K3S_DATASTORE_CAFILE]
+#  --datastore-certfile value                 (db) TLS certification file used to secure datastore backend communication [$K3S_DATASTORE_CERTFILE]
+#  --datastore-keyfile value                  (db) TLS key file used to secure datastore backend communication [$K3S_DATASTORE_KEYFILE]
+#  --default-local-storage-path value         (storage) Default local storage path for local provisioner storage class
+#  --no-deploy value                          (components) Do not deploy packaged components (valid items: coredns, servicelb, traefik, local-storage, metrics-server)
+#  --disable-cloud-controller                 (components) Disable k3s default cloud controller manager
+#  --disable-network-policy                   (components) Disable k3s default network policy controller
+#  --node-name value                          (agent/node) Node name [$K3S_NODE_NAME]
+#  --with-node-id                             (agent/node) Append id to node name
+#  --node-label value                         (agent/node) Registering kubelet with set of labels
+#  --node-taint value                         (agent/node) Registering kubelet with set of taints
+#  --node-ip value, -i value                  (agent/networking) IP address to advertise for node
+#  --node-external-ip value                   (agent/networking) External IP address to advertise for node
+#  --resolv-conf value                        (agent/networking) Kubelet resolv.conf file [$K3S_RESOLV_CONF]
+#  --flannel-iface value                      (agent/networking) Override default flannel interface
+#  --flannel-conf value                       (agent/networking) Override default flannel config file
+#  --kubelet-arg value                        (agent/flags) Customized flag for kubelet process
+#  --kube-proxy-arg value                     (agent/flags) Customized flag for kube-proxy process
+#  --cluster-init                             (experimental/cluster) Initialize new cluster master [$K3S_CLUSTER_INIT]
+#  --cluster-reset                            (experimental/cluster) Forget all peers and become a single cluster new cluster master [$K3S_CLUSTER_RESET]
+
+# k3s server
+# '--kube-apiserver-arg=bind-address=127.0.0.1' \
+# '--kube-apiserver-arg=insecure-port=0' \
+# '--kube-apiserver-arg=kubelet-https=true' \
+# '--kube-apiserver-arg=profiling=false' \
+# '--kube-apiserver-arg=enable-admission-plugins=NamespaceLifecycle' \
+# '--kube-apiserver-arg=audit-log-path=/var/log/apiserver/audit.log' \
+# '--kube-apiserver-arg=audit-log-maxage=30' \
+# '--kube-apiserver-arg=audit-log-maxbackup=10' \
+# '--kube-apiserver-arg=audit-log-maxsize=100' \
+# '--kube-apiserver-arg=service-account-lookup=true' \
+# '--kube-apiserver-arg=enable-admission-plugins=ServiceAccount,NodeRestriction' \
+# '--kube-apiserver-arg=tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384' \
+# '--kube-apiserver-arg=tls-min-version=VersionTLS12' \
+# '--kube-apiserver-arg=feature-gates=AllAlpha=true' \
+# '--kube-scheduler-arg=profiling=false' \
+# '--kube-scheduler-arg=address=127.0.0.1' \
+# '--kube-controller-arg=terminated-pod-gc-threshold=100' \
+# '--kube-controller-arg=profiling=false' \
+# '--kube-controller-arg=use-service-account-credentials=true' \
+# '--kube-controller-arg=feature-gates=RotateKubeletServerCertificate=true' \
+# '--kube-controller-arg=address=127.0.0.1' \
+# '--kubelet-arg=address=127.0.0.1' \
+# '--kubelet-arg=anonymous-auth=false' \
+# '--kubelet-arg=protect-kernel-defaults=true' \
+# '--kubelet-arg=make-iptables-util-chains=true' \
+# '--kubelet-arg=event-qps=0' \
+# '--kubelet-arg=feature-gates=RotateKubeletServerCertificate=true' \
+# '--kubelet-arg=tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384'

@@ -1,0 +1,14 @@
+---
+
+name: k3s
+title: Tests for 'k3s' Ansible role
+maintainer: Ben Fairless
+copyright: Ben Fairless
+copyright_email: ben.fairless@gmail.com
+license: MIT
+summary: Validates k3s configuration
+description: Verifies the configuration defined in role/k3s
+version: 1.0
+
+supports:
+- platform-family: fedora
