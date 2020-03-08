@@ -1,5 +1,5 @@
 # Task file for tests
-ref_file = 'roles/k3s/tasks/install.yaml'
+ref_file = 'tasks/install.yml'
 
 control 'install-01' do
   title 'Install Openshift Python module'

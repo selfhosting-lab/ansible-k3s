@@ -1,5 +1,5 @@
 # Task file for tests
-ref_file = 'roles/k3s/tasks/additional.yaml'
+ref_file = 'tasks/additional.yml'
 
 control 'additional-01' do
   title 'Symlink embedded utilities'

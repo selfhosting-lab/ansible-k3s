@@ -1,5 +1,5 @@
 # Task file for tests
-ref_file = 'roles/k3s/tasks/users.yaml'
+ref_file = 'tasks/users.yml'
 
 control 'users-01' do
   title 'Ensure kubeconfig directory exists in root user directory'
