@@ -1,7 +1,7 @@
 ---
 
 # K3S configuration
-k3s_version: v1.17.2+k3s1
+k3s_version: v1.17.3+k3s1
 k3s_cluster_network: 10.42.0.0/16
 k3s_service_network: 10.43.0.0/24
 k3s_public: false
@@ -37,8 +37,7 @@ manifests_dir: "{{ k3s_var_dir }}/manifests"
 node_token_path: "{{ k3s_var_dir }}/node-token"
 kubeconfig_path: "{{ k3s_etc_dir }}/k3s.yaml"
 kubernetes_config_dir: /etc/kubernetes
-kubernetes_api_server_dir: "{{ kubernetes_config_dir }}/api-server"
-kubernetes_audit_path: "{{ kubernetes_api_server_dir }}/audit-policy.yaml"
+kubernetes_audit_path: "{{ kubernetes_config_dir }}/audit-policy.yaml"
 kubernetes_audit_log_path: /var/log/kube-audit.log
 
 # K3s master arguments
@@ -53,7 +52,6 @@ cluster_arguments:
 - "--kube-apiserver-arg audit-policy-file={{ kubernetes_audit_path }}"
 - "--kube-apiserver-arg audit-log-path={{ kubernetes_audit_log_path }}"
 - "--no-deploy coredns,servicelb,traefik,local-storage,metrics-server"
-# coredns,servicelb,traefik,local-storage,metrics-server
 # - "--flannel-backend=none" # If you want to use a different CNI
 
 #  --log value, -l value                      (logging) Log to file
@@ -66,8 +64,6 @@ cluster_arguments:
 #  --datastore-cafile value                   (db) TLS Certificate Authority file used to secure datastore backend communication [$K3S_DATASTORE_CAFILE]
 #  --datastore-certfile value                 (db) TLS certification file used to secure datastore backend communication [$K3S_DATASTORE_CERTFILE]
 #  --datastore-keyfile value                  (db) TLS key file used to secure datastore backend communication [$K3S_DATASTORE_KEYFILE]
-#  --default-local-storage-path value         (storage) Default local storage path for local provisioner storage class
-#  --no-deploy value                          (components) Do not deploy packaged components (valid items: coredns, servicelb, traefik, local-storage, metrics-server)
 #  --disable-cloud-controller                 (components) Disable k3s default cloud controller manager
 #  --disable-network-policy                   (components) Disable k3s default network policy controller
 #  --node-name value                          (agent/node) Node name [$K3S_NODE_NAME]
@@ -77,12 +73,8 @@ cluster_arguments:
 #  --node-ip value, -i value                  (agent/networking) IP address to advertise for node
 #  --node-external-ip value                   (agent/networking) External IP address to advertise for node
 #  --resolv-conf value                        (agent/networking) Kubelet resolv.conf file [$K3S_RESOLV_CONF]
-#  --flannel-iface value                      (agent/networking) Override default flannel interface
-#  --flannel-conf value                       (agent/networking) Override default flannel config file
 #  --kubelet-arg value                        (agent/flags) Customized flag for kubelet process
 #  --kube-proxy-arg value                     (agent/flags) Customized flag for kube-proxy process
-#  --cluster-init                             (experimental/cluster) Initialize new cluster master [$K3S_CLUSTER_INIT]
-#  --cluster-reset                            (experimental/cluster) Forget all peers and become a single cluster new cluster master [$K3S_CLUSTER_RESET]
 
 # k3s server
 # '--kube-apiserver-arg=bind-address=127.0.0.1' \
@@ -90,7 +82,6 @@ cluster_arguments:
 # '--kube-apiserver-arg=kubelet-https=true' \
 # '--kube-apiserver-arg=profiling=false' \
 # '--kube-apiserver-arg=enable-admission-plugins=NamespaceLifecycle' \
-# '--kube-apiserver-arg=audit-log-path=/var/log/apiserver/audit.log' \
 # '--kube-apiserver-arg=audit-log-maxage=30' \
 # '--kube-apiserver-arg=audit-log-maxbackup=10' \
 # '--kube-apiserver-arg=audit-log-maxsize=100' \
@@ -106,8 +97,6 @@ cluster_arguments:
 # '--kube-controller-arg=use-service-account-credentials=true' \
 # '--kube-controller-arg=feature-gates=RotateKubeletServerCertificate=true' \
 # '--kube-controller-arg=address=127.0.0.1' \
-# '--kubelet-arg=address=127.0.0.1' \
-# '--kubelet-arg=anonymous-auth=false' \
 # '--kubelet-arg=protect-kernel-defaults=true' \
 # '--kubelet-arg=make-iptables-util-chains=true' \
 # '--kubelet-arg=event-qps=0' \

@@ -81,7 +81,7 @@ control 'install-07' do
   title 'Store k3s certificates'
   impact 'medium'
   ref ref_file
-  certificate = '/var/lib/rancher/k3s/server/tls/server-ca.crt'
+  certificate = '/etc/kubernetes/ca-certificate.pem'
   describe file(certificate) do
     it { should exist }
     its('owner') { should eq 'root' }
@@ -96,6 +96,18 @@ control 'install-07' do
 end
 
 control 'install-08' do
+  title 'Ensure k3s certificates are included in system truststore'
+  impact 'low'
+  ref ref_file
+  anchor      = '/etc/pki/ca-trust/source/anchors/k3s.crt'
+  certificate = '/etc/kubernetes/ca-certificate.pem'
+  describe file(anchor) do
+    it { should exist }
+    its('link_path') { should eq certificate }
+  end
+end
+
+control 'install-09' do
   title 'K3s is able to communicate with client'
   impact 'high'
   ref ref_file
@@ -111,7 +123,7 @@ control 'install-08' do
     method:        'GET',
     open_timeout:  60,
     read_timeout:  60,
-    ssl_verify:    true,
+    ssl_verify:    false,
     max_redirects: 3,
     auth:          {
       user: credentials['username'],

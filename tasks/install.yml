@@ -27,7 +27,7 @@
     serole: object_r
     setype: systemd_unit_file_t
   notify:
-    - restart k3s
+  - restart k3s
 
 - name: 'install : Manage sysconfig'
   template:
@@ -40,7 +40,7 @@
     serole: object_r
     setype: etc_t
   notify:
-    - restart k3s
+  - restart k3s
 
 - name: 'install : Ensure k3s is running'
   systemd:
@@ -64,7 +64,6 @@
   set_fact:
     token: "{{ node_token.content | b64decode | regex_replace('\n', '') }}"
 
-# NEEDS TESTS
 - name: 'install : Store k3s certificates'
   copy:
     owner: root
@@ -74,7 +73,7 @@
     src: "{{ k3s_var_dir }}/tls/server-ca.crt"
     dest: "{{ kubernetes_config_dir }}/ca-certificate.pem"
 
-# NEEDS TESTS
+# NO TESTS
 - name: 'install : Ensure k3s certificates are included in system truststore'
   file:
     owner: root
