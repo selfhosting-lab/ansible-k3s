@@ -2,6 +2,18 @@
 ref_file = 'tasks/firewalld.yml'
 
 control 'firewalld-01' do
+  title 'Ensure FirewallD is installed'
+  impact 'critical'
+  ref ref_file
+  pkgs = %w[firewalld python3-firewall]
+  pkgs.each do |pkg|
+    describe package(pkg) do
+      it { should be_installed }
+    end
+  end
+end
+
+control 'firewalld-02' do
   title 'Ensure service definition exists'
   impact 'medium'
   ref ref_file
@@ -14,7 +26,7 @@ control 'firewalld-01' do
   end
 end
 
-control 'firewalld-02' do
+control 'firewalld-03' do
   title 'firewalld : Ensure Kube-API is in the firewalld service list'
   impact 'medium'
   ref ref_file
@@ -23,7 +35,7 @@ control 'firewalld-02' do
   end
 end
 
-control 'firewalld-03' do
+control 'firewalld-04' do
   title ' Ensure Kube-API is available in the internal zone'
   impact 'medium'
   ref ref_file

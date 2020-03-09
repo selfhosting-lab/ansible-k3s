@@ -1,5 +1,13 @@
 ---
 
+# NO TESTS
+- name: 'firewalld : Ensure FirewallD is installed'
+  dnf:
+    name:
+    - firewalld
+    - python3-firewall
+    state: present
+
 - name: 'firewalld : Ensure Kube-API firewalld service exists'
   copy:
     src: kube-api.xml
