@@ -1,0 +1,21 @@
+galaxy_info:
+  role_name: host
+  author: Ben Fairless <ben.fairless@gmail.com>
+  description: Provide a customised [k3s](https://k3s.io/) installation.
+  company: selfhosting-lab.com
+  issue_tracker_url: https://github.com/selfhosting-lab/ansible-k3s/issues
+  license: MIT
+  min_ansible_version: 2.0
+
+  platforms:
+  - name: Fedora
+    versions:
+    - 30
+
+  galaxy_tags:
+  - fedora
+  - selfhosting-lab
+  - kubernetes
+
+dependencies: []
+
